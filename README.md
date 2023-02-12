@@ -106,7 +106,7 @@ Now that we have a freshly set up system and have fixed or ignored the above err
 
 ### Set a static IP address for the Raspberry Pi
 
-This is done via the router interface. You can reach it by entering http://fritz.box or http://ip-adresse-des-routers in the address bar of your preferred browser.
+This is done via the router interface. You can reach it by entering http://fritz.box or http://ip-address-of-the-router in the address bar of your preferred browser.
 Then navigate to the following screen:
 
 ![fritzbox_network_connections](https://user-images.githubusercontent.com/123265893/218282027-874f4508-c003-4fc8-ab3f-f162ed180dd1.PNG)
@@ -241,6 +241,8 @@ $systemctl disable unbound-resolvconf.service
 $systemctl stop unbound-resolvconf.service
 ```
 
+Then rename or delete the file `/etc/unbound/unbound.conf.d/resolvconf_resolvers.conf` as described above.
+
 More information you can find (here)[https://docs.pi-hole.net/guides/dns/unbound/#disable-resolvconf-entry-for-unbound-required-for-debian-bullsye-releases].
 
 #### /etc/dnsmasq.d/99-edns.conf
@@ -249,7 +251,7 @@ You should consider adding `edns-packet-max=1232` to a config file like /etc/dns
 
 ### /etc/unbound/unbound.conf.d/pi-hole.conf
  
-This file contains settings wich can be found [here](https://docs.pi-hole.net/guides/dns/unbound/#configure-unbound). Basically, you can copy/paste the content. The only(!) change I made is `do-ip6: no` to `do-ip6: yes`. For some reason Unbound (ver. 1.9.x) seems to want to use IP6. After a long search I found a hint in the depths of the internet that this could be the reason why Unbound is not playing. After that it worked. This may be due to the fact that this is also activated by default in the Fritzbox and I have not switched it off. But it gets even weirder later when it comes to telling Pi-hole to use Unbound as DNS.
+This file contains settings wich can be found [here](https://docs.pi-hole.net/guides/dns/unbound/#configure-unbound). Basically, you can copy/paste the content. The only(!) change I made is `do-ip6: no` to `do-ip6: yes`. For some reason Unbound (ver. 1.9.x) seems to want to use IP6. After a long search I found a hint in the depths of the internet that this could be the reason why Unbound is not playing. After changing that entry it worked. This may be due to the fact that this is also activated by default in the Fritzbox and I have not switched it off. But it gets even weirder later when it comes to telling Pi-hole to use Unbound as DNS.
 
 ### /etc/unbound/unbound.conf.d/resolvconf_resolvers.conf.backup
 
