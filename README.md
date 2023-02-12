@@ -74,6 +74,7 @@ The output seems to be okay now.
        CGroup: /system.slice/bluetooth.service
                └─12775 /usr/lib/bluetooth/bluetoothd --noplugin=sap
 ```
+
 If you don't want to overwrite the system bluetooth.service file, it's a good place to use a *.service.d override (you need elevated privileges again):
 
 1) Creat a new directory with `$mkdir /etc/systemd/system/bluetooth.service.d/`
@@ -85,6 +86,7 @@ If you don't want to overwrite the system bluetooth.service file, it's a good pl
      ExecStart=
      ExecStart=/usr/lib/bluetooth/bluetoothd --noplugin=sap
      ```
+     
 4) save with `Ctrl-o`/`Strg-o`; exit nano with `Ctrl-x`/`Strg-x`.
 
 _The simplest explanation is that it clears out the value of ExecStart= so we can override it rather than append to it. Some SystemD settings behave as an appended list when specifying them multiple times. The third line defines the new value of ExecStart=_
