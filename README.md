@@ -1,5 +1,10 @@
 # Debian (bullseye) with Pi-hole & Unbound & Fritzbox 7490
-This repository is an attempt to show how Pi-hole and Unbound can be made to work on Debian (Bullseye). You should grab a cup of coffee or tea as there is a lot to read.
+This is an attempt to show how Pi-hole and Unbound can be made to work on Debian (Bullseye). You should grab a cup of coffee or tea as there is a lot to read.
+
+| The way described here worked for me. I can't say if it works for you too. But maybe this description will help you to find the right path for you. Good luck with it. |
+|:-|
+
+A further description of how it all works can be found here: <https://docs.pi-hole.net/guides/dns/unbound/#>
 
 ## Why another tutorial about how to setup Pihole and Unbound
 
@@ -97,17 +102,29 @@ This may solve the problem, in my case it doesn't. At least one error message is
 
 ## Installing Pihole and Unbound
 
-Now that we have a freshly set up system and have fixed or ignored the above errors, we can now move on to the actual task: installing Pihole and Unbound.
+Now that we have a freshly set up system and have fixed or ignored the above errors, we can now move on to the actual task: installing Pihole and Unbound. But before that we should
+
+### Set a static IP address for the Raspberry Pi
+
+This is done via the router interface. You can reach it by entering http://fritz.box or http://ip-adresse-des-routers in the address bar of your preferred browser.
+Then navigate to the following screen:
+
+![fritzbox_network_connections](https://user-images.githubusercontent.com/123265893/218282027-874f4508-c003-4fc8-ab3f-f162ed180dd1.PNG)
+
+Find your Raspberry Pi and click on the pencil icon on the right side. You will now see the settings regarding your Pi. Choose the IP address you want for your Pi and make it static. We will see that IP address later.
+
+![fritzbox_raspberrypi_settings](https://user-images.githubusercontent.com/123265893/218282458-1723be36-b3dd-47dd-bd05-67a59734c598.PNG)
+
 
 ### Pi-hole
 
-At first we will install Pihole. This shouldn't be a problem. You can use the following command and you'll be fine: `curl -sSL https://install.pi-hole.net | bash`. Piping to bash is a controversial topic, as it prevents you from reading code that is about to run on your system. If you would prefer to review the code before installation, the developers provide alternative installation methods. You can find [here](https://docs.pi-hole.net/main/basic-install/) more information.
+Now we will install Pi-hole. This shouldn't be a problem. You can use the following command and you'll be fine: `curl -sSL https://install.pi-hole.net | bash`. Piping to bash is a controversial topic, as it prevents you from reading code that is about to run on your system. If you would prefer to review the code before installation, the developers provide alternative installation methods. You can find [here](https://docs.pi-hole.net/main/basic-install/) more information.
 
 The developers suggest to configure the router after installing Pi-hole and they provide information about different models. Regarding the Fritzbox there is a walkthrough in [English](https://docs.pi-hole.net/routers/fritzbox/) and [German](https://docs.pi-hole.net/routers/fritzbox-de/). For other routers there are instructions too. I recommend to keep track of the changes, since Unbound need a few more steps and it may be necessary to bypass Pi-hole because internet access is temporarily blocked and it may usefull to have an internet connection during the configuration process.
 
 First, let's feed Pi-hole to see if it works. Pi-hole requires lists of malicious web addresses. Such lists can be found [here](https://github.com/RPiList/specials) (mainly for German users, so the instructions are also in German), among other places.
 
-To check if Pi-hole is working, you have to [configure](https://docs.pi-hole.net/main/post-install/) your router and Pi-hole accordingly. It is recommended to have a static IP for your Raspberry Pi, otherwise you will run into problems, at the latest when running Unbound as local DNS.
+To check if Pi-hole is working, you have to [configure](https://docs.pi-hole.net/main/post-install/) your router and Pi-hole accordingly. It is recommended to have a static IP for your Raspberry Pi, otherwise you will run into problems, at the latest when running Unbound as local DNS. But we've already done that, so that shouldn't be a problem anymore.
 
 Also, I did NOT set up Pi-hole as a DHCP server. I leave this to the Fritzbox. The latter will get the data from Unbound later anyway.
 
@@ -126,3 +143,146 @@ In order to get Unbound to cooperate, a few more steps are necessary than variou
 |While we're at it: I can't say whether the steps shown here are necessary for later versions or whether a reconfiguration is even mandatory. Rumor has it that newer versions of Unbound no longer need certain changes described here. They may then be overwritten and everything runs like clockwork - or not. Time will tell.|
 |:-|
 
+Here's an overview of the files that will play a role in some way and the directories in which to find them:
+
+```
++-etc (directory)
+   |   dhcpcd.conf (file)
+   |   resolv.conf (file)
+   |   resolvconf.conf (file)
+   |   
+   +---dnsmasq.d (subdirectory)
+   |       99-edns.conf (file)
+   |       
+   \---unbound (subdirectory)
+       \---unbound.conf.d (subdirectory)
+               pi-hole.conf (file)
+               resolvconf_resolvers.conf.backup (file)
+               root-auto-trust-anchor-file.conf (file)
+```
+
+As you can see, the whole thing takes place in the /etc/ directory or in subdirectories of /etc/. As a result, elevated privileges are required for each write operation. I won't mention this every time, you should already know the drill.
+
+In the following we go through each individual file step by step and in the end Unbound should work well with Pi-hole and answer the DNS queries accordingly.
+
+#### /etc/dhcpcd.conf
+To this file probably only one or two changes are necessary, since during the installation of Pi-hole most of the required entries are written.
+
+At the very end of this file you'll find the follwing line:
+```
+# fallback to static profile on eth0
+```
+Below this line should be the IP addresses of your Raspberry Pi and your router. It will look like this:
+
+```
+#interface eth0                                   do not touch this line, its just a comment
+#fallback static_eth0                             do not touch this line, its just a comment
+
+interface eth0                                    interface name, you shouldn't use a WiFi connection
+
+static ip_address=192.168.xxx.xxx/24         <--- this has to be the IP address of your Raspberry Pi, under
+                                                  which the little rascal can be reached in the home network.
+
+static routers=192.168.xxx.xxx               <--- this has to be the IP address of your router, default is 192.168.178.1
+
+static domain_name_servers=127.0.0.1#5335    <--- this will be the IP address of the DNS;
+                                                  note the port address behind the IP,
+                                                  This is important and should be included if not present.
+                                                  It probably won't be there because no one knows yet that
+                                                  this port is needed.
+```
+The static IP address and the address of your router depend on the home network address space specified in the router. The address space 192.168.0.1 and 192.168.0.254 is usually used for home networks and not for public networks. In this way, every device and every application "knows" whether it is in the home network or not. The Fritzbox uses this as default setting, so it might look similar at your site and only the IP address for the Raspberry Pi has to be changed, if its not correct. The port address after 127.0.0.1 has to be inserted. Now, we're done with this file.
+
+When you have made the changes, do not restart the dhcp server. We will do a reboot later, when everything is done.
+
+#### /etc/resolv.conf
+
+This file contains just two lines:
+
+```
+# Generated by resolvconf
+nameserver 127.0.0.1
+```
+
+The first line tells us that this is a generated file. A change in content does not remain. But we see, the port address is not specified here. Therefore it must be included in dhcpcd.conf so that it is advertised to Pi-hole in conjunction with the IP address 127.0.0.1. We do not use the other IP address, since this is the address for localhost and we don't want Pi-hole to look for the nameserver elsewhere in the home network. As a reminder: at the moment this role still has the Fritzbox and it asks DNS.Watch if it doesn't know the requested address itself. But we want to change that, so lets continue.
+
+#### /etc/resolvconf.conf
+
+Recent Debian-based OS releases auto-install a package called `openresolv`, which will cause unexpected behaviour for pihole and unbound. Openresolv's service/config instructs resolvconf to write unbound's own DNS service at nameserver 127.0.0.1 , but without the 5335 port, into the file /etc/resolv.conf. That /etc/resolv.conf file is used by local services/processes to determine DNS servers configured. You need to remove openresolv, or edit the configuration file and disable the service to work-around the misconfiguration.
+
+##### The hard way
+
+At the very end of /etc/resolvconf.conf you will find the following line:
+
+`unbound_conf=/etc/unbound/unbound.conf.d/resolvconf_resolvers.conf`
+
+Just comment that line out like this:
+
+`#unbound_conf=/etc/unbound/unbound.conf.d/resolvconf_resolvers.conf`
+
+This step is necessary because resolvconf creates an unwanted/broken file when the entry is active. After the entry has commented out the unwanted file should be renamed
+
+`mv /etc/unbound/unbound.conf.d/resolvconf_resolvers.conf resolvconf_resolvers.conf.backup`
+
+or deleted
+
+`rm /etc/unbound/unbound.conf.d/resolvconf_resolvers.conf`
+
+By simply removing the file and restart unbound then unbound works correctly as a recursive DNS. The problem is that after a while this file is being auto generated again, this didn't happen in Buster but it is happening now in Bullseye. To prevent this, the /etc/resolvconf.conf file must be modified as described above.
+
+##### The easy way
+
+Check, if the service is active with `$systemctl status unbound-resolvconf.service`
+
+If it is running simply disable it with the following commands:
+
+```
+$systemctl disable unbound-resolvconf.service
+$systemctl stop unbound-resolvconf.service
+```
+
+More information you can find (here)[https://docs.pi-hole.net/guides/dns/unbound/#disable-resolvconf-entry-for-unbound-required-for-debian-bullsye-releases].
+
+#### /etc/dnsmasq.d/99-edns.conf
+
+You should consider adding `edns-packet-max=1232` to a config file like /etc/dnsmasq.d/99-edns.conf to signal FTL to adhere to this limit.
+
+### /etc/unbound/unbound.conf.d/pi-hole.conf
+ 
+This file contains settings wich can be found [here](https://docs.pi-hole.net/guides/dns/unbound/#configure-unbound). Basically, you can copy/paste the content. The only(!) change I made is `do-ip6: no` to `do-ip6: yes`. For some reason Unbound (ver. 1.9.x) seems to want to use IP6. After a long search I found a hint in the depths of the internet that this could be the reason why Unbound is not playing. After that it worked. This may be due to the fact that this is also activated by default in the Fritzbox and I have not switched it off. But it gets even weirder later when it comes to telling Pi-hole to use Unbound as DNS.
+
+### /etc/unbound/unbound.conf.d/resolvconf_resolvers.conf.backup
+
+This is the culprit. You have already deleted or renamed the file.
+
+### /etc/unbound/unbound.conf.d/root-auto-trust-anchor-file.conf
+
+The content of this file should look like this:
+
+```
+server:
+    # The following line will configure unbound to perform cryptographic
+    # DNSSEC validation using the root trust anchor.
+    auto-trust-anchor-file: "/var/lib/unbound/root.key"
+```
+
+## Pi-hole and Unbound
+
+Now we can tell Pi-hole, that we have a local DNS.
+From your workstation open Pi-hole in your webbrowser using the following address:
+
+`http://IP-address-of-the-raspberrypi/admin/`. We must provide the static IP address that we have defined in the router. The localhost address (127.0.0.1) won't work. If you forgot the password that has been shown during the installation process of Pi-hole, just click `Forgot password`. You'll get instructions how to define a new password. An ssh connection would be very handy this moment.
+
+Once you are logged in, navigate to the following page:
+
+![pihole-settings- local_dns](https://user-images.githubusercontent.com/123265893/218285445-b98d1e23-0ced-4c18-9821-2099dfd94d3a.png)
+
+Type `127.0.0.1#5335`in the field Custom1 (IP4).
+
+Now you can restart your Raspberry Pi. If you have no internet access after the reboot, you can try to provide `::1` in the field Custom 3 (IP6). This worked for me. You may notice the little yellow dot in the upper left area. This signals that there might be an issue. Clicking on this will bring you to the following screen:
+
+![pihole-warning](https://user-images.githubusercontent.com/123265893/218285573-443eb6fa-7344-4600-a8a0-a51d4907f54a.png)
+
+This tells us that the IP6 address is a redundant address (it is localhost too wich is already defined) and the Fritzboy tunnels IP6 request over IP4 anyway. So this is ignored. However, now we should have internet access from every device in our home network and every request should answered using unbound and filtered by Pi-hole.
+
+And this is where the weird comes in. The IP6 address `::1` can be deleted and everything works.
