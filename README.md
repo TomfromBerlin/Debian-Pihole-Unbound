@@ -122,14 +122,16 @@ Find your Raspberry Pi and click on the pencil icon on the right side. You will 
 
 Now we will install Pi-hole. This shouldn't be a problem. You can use the following command and you'll be fine: `curl -sSL https://install.pi-hole.net | bash`. Piping to bash is a controversial topic, as it prevents you from reading code that is about to run on your system. If you would prefer to review the code before installation, the developers provide alternative installation methods. You can find [here](https://docs.pi-hole.net/main/basic-install/) more information.
 
-The developers suggest to configure the router after installing Pi-hole and they provide information about different models. Regarding the Fritzbox there is a walkthrough in [English](https://docs.pi-hole.net/routers/fritzbox/) and [German](https://docs.pi-hole.net/routers/fritzbox-de/). For other routers there are instructions too. I recommend to keep track of the changes, since Unbound need a few more steps and it may be necessary to bypass Pi-hole because internet access is temporarily blocked and it may usefull to have an internet connection during the configuration process.
+The developers suggest to configure the router after installing Pi-hole and they provide information about different models. Regarding the Fritzbox there is a walkthrough in [English](https://docs.pi-hole.net/routers/fritzbox/) and [German](https://docs.pi-hole.net/routers/fritzbox-de/). For other routers there are instructions too. I recommend to keep track of the changes, because internet access may temporarily blocked and it may usefull to have an internet connection during the configuration process.
 
-First, let's feed Pi-hole to see if it works. Pi-hole requires lists of malicious web addresses. Such lists can be found [here](https://github.com/RPiList/specials/blob/master/Blocklisten.md) (mainly for German users, so the instructions are also in German), among other places.
+First, let's feed Pi-hole to see if it works. Pi-hole requires lists of malicious web addresses. Such lists can be found [here](/../../../../RPiList/specials/blob/master/Blocklisten.md) (mainly for German users, so the instructions are also in German), among other places.
 Log in to your Pi-hole and click on 'ADLISTS'. You should now see this page:
 
 ![pi-hole_adlists](https://user-images.githubusercontent.com/123265893/218336144-76b6f54d-b967-422d-bfd8-02afa6872aeb.png)
 
 You can add multiple lists by separating each entry with a space. In other words: you can mark all lists at once, rightclick and copy them to you clipboard. Then you can paste them in the address field in Pi-hole. After adding the lists you have to run `pihole -g` to update your gravity list. You can do this also within the Pi-hole interface, but then you have to keep this site open until the update is done. I recommend the command line.
+
+If you forgot the password for Pi-hole that has been shown during the installation process just click `Forgot password`. You'll get instructions how to define a new password. An ssh connection would be very handy this moment.
 
 By the way, a cron job is created during the installation process to update Pi-hole and your Gravity database regularly. The command `ls -l /etc/cron*` shows all running cron jobs. The output looks like this:
 
@@ -229,7 +231,7 @@ There are two options to solve the problem and some will choose
 
 ##### _The hard way_
 
-just in case `unbound-resolvconf.service` is needed someday. You need to modify `/etc/resolvconf.conf`. At the very end of the file you will find the following line:
+just in case `unbound-resolvconf.service` is needed someday. In this case you need to modify `/etc/resolvconf.conf`. At the very end of the file you will find the following line:
 
 `unbound_conf=/etc/unbound/unbound.conf.d/resolvconf_resolvers.conf`
 
@@ -258,9 +260,13 @@ $systemctl disable unbound-resolvconf.service
 $systemctl stop unbound-resolvconf.service
 ```
 
-Then delete the file `/etc/unbound/unbound.conf.d/resolvconf_resolvers.conf` with `rm /etc/unbound/unbound.conf.d/resolvconf_resolvers.conf`.
+Then delete the file
 
-More information you can find (here)[https://docs.pi-hole.net/guides/dns/unbound/#disable-resolvconf-entry-for-unbound-required-for-debian-bullsye-releases].
+`/etc/unbound/unbound.conf.d/resolvconf_resolvers.conf` with
+
+`rm /etc/unbound/unbound.conf.d/resolvconf_resolvers.conf`.
+
+More information you can find [here](https://docs.pi-hole.net/guides/dns/unbound/#disable-resolvconf-entry-for-unbound-required-for-debian-bullsye-releases).
 
 #### _/etc/dnsmasq.d/99-edns.conf_
 
@@ -272,7 +278,7 @@ This file contains settings wich can be found [here](https://docs.pi-hole.net/gu
 
 #### _/etc/unbound/unbound.conf.d/resolvconf_resolvers.conf(.backup)_
 
-This is the culprit. Delete or rename the file and disable the unbound-resolvconf.service, or at least manipulate /etc/resolvconf.conf (see [here](/README.md#etcunboundunboundconfdresolvconf_resolversconfbackup)) to prevent its resurrection.
+This is the culprit. Delete or rename the file and disable the unbound-resolvconf.service, or at least manipulate /etc/resolvconf.conf (see [here](/../../../../TomfromBerlin/Debian-Pihole-Unbound/blob/main/README.md#the-hard-way)) to prevent its resurrection.
 
 #### _/etc/unbound/unbound.conf.d/root-auto-trust-anchor-file.conf_
 
@@ -291,7 +297,7 @@ Now we can tell Pi-hole, that we have a local DNS. From your workstation open Pi
 
 `http://IP-address-of-the-raspberrypi/admin/`.
 
-We must provide the static IP address that we have defined in the router. The localhost address (127.0.0.1) won't work. If you forgot the password for Pi-hole that has been shown during the installation process just click `Forgot password`. You'll get instructions how to define a new password. An ssh connection would be very handy this moment.
+We must provide the static IP address that we have defined in the router. The localhost address (127.0.0.1) won't work.
 
 Once you are logged in, navigate to the DNS page under `Settings`:
 
@@ -313,7 +319,7 @@ In the next screen you can enter the IP address:
 
 Leave all other fields untouched.
 
-If you have no internet access after the reboot, you can try to provide `::1` in the field Custom 3 (IPv6) on the [DNS settings page](https://github.com/TomfromBerlin/Debian-Pihole-Unbound/edit/main/README.md#pi-hole-and-unbound) of Pi-hole. This worked for me. You may notice the little yellow dot in the upper left area. This signals that there might be an issue. Clicking on this will bring you to the following screen:
+If you have no internet access after the reboot, you can try to provide `::1` in the field Custom 3 (IPv6) on the [DNS settings page](/../../../../TomfromBerlin/Debian-Pihole-Unbound/edit/main/README.md#pi-hole-and-unbound) of Pi-hole. This worked for me. You may notice the little yellow dot in the upper left area. This signals that there might be an issue. Clicking on this will bring you to the following screen:
 
 ![pihole-warning](https://user-images.githubusercontent.com/123265893/218285573-443eb6fa-7344-4600-a8a0-a51d4907f54a.png)
 
