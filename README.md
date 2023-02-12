@@ -100,7 +100,7 @@ $systemctl restart bluetooth.service
 
 Well, that's a false flag, but at least one error message is gone. However, the next start is coming and you will face the same problem: hciuart.service fails to start. The problem is more likely that the BT modem is initialized too late.
 
-|‼️| What actually helps is a new entry in the _/boot/config.txt_ file: `dtparam=krnbt`, wich gives the kernel the task of initializing the BT modem. There are already entries starting with dtparam=, I added the new one there and it seems to help. This will probably become the standard in the future from what I've heard. |‼️|
+|‼️| What actually helps is a new entry in the _/boot/config.txt_ file: `dtparam=krnbt`, wich gives the kernel the task of initializing the BT modem. There are already entries starting with dtparam=, I added the new one there and it seems to help. This will probably become the standard in the future from what I've heard. At this point, a big thank you [@pelwell](/../../../../pelwell) for the [crucial hint](https://github.com/RPi-Distro/pi-bluetooth/issues/25#issuecomment-1426768853). |‼️|
 |:-:|:-|:-:|
 
 ## _Installing Pihole and Unbound_
