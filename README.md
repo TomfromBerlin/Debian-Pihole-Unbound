@@ -274,21 +274,34 @@ From your workstation open Pi-hole in your webbrowser using the following addres
 
 `http://IP-address-of-the-raspberrypi/admin/`. We must provide the static IP address that we have defined in the router. The localhost address (127.0.0.1) won't work. If you forgot the password that has been shown during the installation process of Pi-hole, just click `Forgot password`. You'll get instructions how to define a new password. An ssh connection would be very handy this moment.
 
-Once you are logged in, navigate to the following page:
+Once you are logged in, navigate to the DNS page under `Settings`:
 
 ![pihole-settings- local_dns](https://user-images.githubusercontent.com/123265893/218285445-b98d1e23-0ced-4c18-9821-2099dfd94d3a.png)
 
-Type `127.0.0.1#5335`in the field Custom1 (IP4).
+Type `127.0.0.1#5335`in the field Custom1 (IPv4).
 
-Now you can restart your Raspberry Pi. If you have no internet access after the reboot, you can try to provide `::1` in the field Custom 3 (IP6). This worked for me. You may notice the little yellow dot in the upper left area. This signals that there might be an issue. Clicking on this will bring you to the following screen:
+Now you can restart your Raspberry Pi.
+
+But one last thing has to be done: the router must know, that he isn't responsible anymore for DNS resolving. This will be achived by setting the IPv4 address of the lokal DNS in your router to the IP address of the RaspBerry Pi.
+
+Click on the button IPv4 Settings in the lower right corner.
+![Heimnetz-netzwerk-ip4-ip6_einstellungen-button](https://user-images.githubusercontent.com/123265893/218287228-8c4b4638-ab45-4ca6-ba06-bd89c64b04e1.png)
+
+In the next screen you can enter the IP address:
+
+![Heimnetz-netzwerk-ip4_einstellungen](https://user-images.githubusercontent.com/123265893/218287360-216c02ec-75c8-48c7-ac79-feeecf985de3.PNG)
+
+Leave all other fields untouched.
+
+If you have no internet access after the reboot, you can try to provide `::1` in the field Custom 3 (IPv6) on the DNS settings page of Pi-hole. This worked for me. You may notice the little yellow dot in the upper left area. This signals that there might be an issue. Clicking on this will bring you to the following screen:
 
 ![pihole-warning](https://user-images.githubusercontent.com/123265893/218285573-443eb6fa-7344-4600-a8a0-a51d4907f54a.png)
 
-This tells us that the IP6 address is a redundant address (it is localhost too wich is already defined) and the Fritzboy tunnels IP6 request over IP4 anyway. So this is ignored. However, now we should have internet access from every device in our home network and every request should answered using unbound and filtered by Pi-hole.
+This tells us that the IP6 address is somehow redundant since it is the IPv6 address of localhost and this is already defined by the IPv4 address (127.0.0.1). So this is ignored. However, now we should have internet access from every device in our home network and every request should be answered by unbound and filtered by Pi-hole.
 
 And this is where the weird comes in. The IP6 address `::1` can be deleted and everything works.
 
-When you search for a website for the first time, it may take a while to be found. The second and every further one is processed in no time at all.
+When you now search for a website for the first time, it may take a while to be found. The second call and every further one is processed in no time at all.
 
 First search (look for the query time):
 
