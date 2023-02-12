@@ -257,7 +257,7 @@ This file contains settings wich can be found [here](https://docs.pi-hole.net/gu
 
 #### /etc/unbound/unbound.conf.d/resolvconf_resolvers.conf(.backup)
 
-This is the culprit. Delete or rename the file and disable the unbound-resolvconf.service, or at least manipulate /etc/resolvconf.conf (see (here)[/README.md#etcunboundunboundconfdresolvconf_resolversconfbackup]) to prevent its resurrection.
+This is the culprit. Delete or rename the file and disable the unbound-resolvconf.service, or at least manipulate /etc/resolvconf.conf (see (here)[README.md#etcunboundunboundconfdresolvconf_resolversconfbackup]) to prevent its resurrection.
 
 #### /etc/unbound/unbound.conf.d/root-auto-trust-anchor-file.conf
 
