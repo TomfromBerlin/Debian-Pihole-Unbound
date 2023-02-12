@@ -156,7 +156,7 @@ Here's an overview of the files that will play a role in some way and the direct
    \---unbound (subdirectory)
        \---unbound.conf.d (subdirectory)
                pi-hole.conf (file)
-               resolvconf_resolvers.conf.backup (file)
+               resolvconf_resolvers.conf (file)
                root-auto-trust-anchor-file.conf (file)
 ```
 
@@ -182,7 +182,8 @@ interface eth0                                    interface name, you shouldn't 
 static ip_address=192.168.xxx.xxx/24         <--- this has to be the IP address of your Raspberry Pi, under
                                                   which the little rascal can be reached in the home network.
 
-static routers=192.168.xxx.xxx               <--- this has to be the IP address of your router, default is 192.168.178.1
+static routers=192.168.xxx.xxx               <--- this has to be the IP address of your router,
+                                                  default is 192.168.178.1
 
 static domain_name_servers=127.0.0.1#5335    <--- this will be the IP address of the DNS;
                                                   note the port address behind the IP,
@@ -203,7 +204,9 @@ This file contains just two lines:
 nameserver 127.0.0.1
 ```
 
-The first line tells us that this is a generated file. A change in content does not remain. But we see, the port address is not specified here. Therefore it must be included in dhcpcd.conf so that it is advertised to Pi-hole in conjunction with the IP address 127.0.0.1. We do not use the other IP address, since this is the address for localhost and we don't want Pi-hole to look for the nameserver elsewhere in the home network. As a reminder: at the moment this role still has the Fritzbox and it asks DNS.Watch if it doesn't know the requested address itself. But we want to change that, so lets continue.
+The first line tells us that this is a generated file. Content changes does not remain. But we see, the port address is not specified here. Therefore it must be included in dhcpcd.conf so that it is advertised to Pi-hole in conjunction with the IP address 127.0.0.1.
+
+As a reminder: at the moment this role still has the Fritzbox and it asks DNS.Watch if it doesn't know the requested address itself. But we want to change that, so lets continue.
 
 #### /etc/resolvconf.conf
 
@@ -250,11 +253,11 @@ You should consider adding `edns-packet-max=1232` to a config file like /etc/dns
 
 #### /etc/unbound/unbound.conf.d/pi-hole.conf
  
-This file contains settings wich can be found [here](https://docs.pi-hole.net/guides/dns/unbound/#configure-unbound). Basically, you can copy/paste the content. The only(!) change I made is `do-ip6: no` to `do-ip6: yes`. For some reason Unbound (ver. 1.9.x) seems to want to use IP6. After a long search I found a hint in the depths of the internet that this could be the reason why Unbound is not playing. After changing that entry it worked. This may be due to the fact that this is also activated by default in the Fritzbox and I have not switched it off. But it gets even weirder later when it comes to telling Pi-hole to use Unbound as DNS.
+This file contains settings wich can be found [here](https://docs.pi-hole.net/guides/dns/unbound/#configure-unbound). Basically, you can copy/paste the content. The only(!) change I made is `do-ip6: no` to `do-ip6: yes`. For some reason Unbound (ver. 1.9.x) seems to want to use IP6. After a long search I found a hint in the depths of the internet that this could be the reason why Unbound is not playing. After changing that entry it worked. This may be due to the fact that this is also activated by default in the Fritzbox and I have not switched it off. But it gets weird later when it comes to telling Pi-hole to use Unbound as DNS.
 
-#### /etc/unbound/unbound.conf.d/resolvconf_resolvers.conf.backup
+#### /etc/unbound/unbound.conf.d/resolvconf_resolvers.conf(.backup)
 
-This is the culprit. You have already deleted or renamed the file.
+This is the culprit. Delete or rename the file and disable the unbound-resolvconf.service, or at least manipulate /etc/resolvconf.conf (see (here)[/README.md#etcunboundunboundconfdresolvconf_resolversconfbackup]) to prevent its resurrection.
 
 #### /etc/unbound/unbound.conf.d/root-auto-trust-anchor-file.conf
 
