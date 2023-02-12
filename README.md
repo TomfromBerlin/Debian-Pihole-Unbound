@@ -75,22 +75,21 @@ If you don't want to overwrite the system bluetooth.service file, it's a good pl
 1) `$mkdir /etc/systemd/system/bluetooth.service.d/`
 2) place in a new file with: `$touch /etc/systemd/system/bluetooth.service.d/01-disable-sap-plugin.conf`
 3) edit with: `$nano /etc/systemd/system/bluetooth.service.d/01-disable-sap-plugin.conf`
+     Add the following three lines to the file:
+     ```
+     [Service]
+     ExecStart=
+     ExecStart=/usr/lib/bluetooth/bluetoothd --noplugin=sap
+     ```
 4) save with `Ctrl-o`/`Strg-o`; exit nano with `Ctrl-x`/`Strg-x`.
-
-Add the following three lines to the file:
-```
-[Service]
-ExecStart=
-ExecStart=/usr/lib/bluetooth/bluetoothd --noplugin=sap
-```
 
 _The simplest explanation is that it clears out the value of ExecStart= so we can override it rather than append to it. Some SystemD settings behave as an appended list when specifying them multiple times. The third line defines the new value of ExecStart=_
 
 Then enter the following commands in the command line:
 
 ```
-$sudo systemctl daemon-reload
-$sudo systemctl restart bluetooth.service
+$systemctl daemon-reload
+$systemctl restart bluetooth.service
 ```
 
 (source: <https://raspberrypi.stackexchange.com/questions/40839/sap-error-on-bluetooth-service-status>)
@@ -249,15 +248,15 @@ More information you can find (here)[https://docs.pi-hole.net/guides/dns/unbound
 
 You should consider adding `edns-packet-max=1232` to a config file like /etc/dnsmasq.d/99-edns.conf to signal FTL to adhere to this limit.
 
-### /etc/unbound/unbound.conf.d/pi-hole.conf
+#### /etc/unbound/unbound.conf.d/pi-hole.conf
  
 This file contains settings wich can be found [here](https://docs.pi-hole.net/guides/dns/unbound/#configure-unbound). Basically, you can copy/paste the content. The only(!) change I made is `do-ip6: no` to `do-ip6: yes`. For some reason Unbound (ver. 1.9.x) seems to want to use IP6. After a long search I found a hint in the depths of the internet that this could be the reason why Unbound is not playing. After changing that entry it worked. This may be due to the fact that this is also activated by default in the Fritzbox and I have not switched it off. But it gets even weirder later when it comes to telling Pi-hole to use Unbound as DNS.
 
-### /etc/unbound/unbound.conf.d/resolvconf_resolvers.conf.backup
+#### /etc/unbound/unbound.conf.d/resolvconf_resolvers.conf.backup
 
 This is the culprit. You have already deleted or renamed the file.
 
-### /etc/unbound/unbound.conf.d/root-auto-trust-anchor-file.conf
+#### /etc/unbound/unbound.conf.d/root-auto-trust-anchor-file.conf
 
 The content of this file should look like this:
 
@@ -288,3 +287,15 @@ Now you can restart your Raspberry Pi. If you have no internet access after the 
 This tells us that the IP6 address is a redundant address (it is localhost too wich is already defined) and the Fritzboy tunnels IP6 request over IP4 anyway. So this is ignored. However, now we should have internet access from every device in our home network and every request should answered using unbound and filtered by Pi-hole.
 
 And this is where the weird comes in. The IP6 address `::1` can be deleted and everything works.
+
+When you search for a website for the first time, it may take a while to be found. The second and every further one is processed in no time at all.
+
+First search (look for the query time):
+
+![first-dig-noerror-107ms](https://user-images.githubusercontent.com/123265893/218286774-15835d42-a999-4db4-8456-d7940ba678b8.png)
+
+Second search:
+
+![second-dig-noerror-0ms](https://user-images.githubusercontent.com/123265893/218286806-2a52dcf4-bc63-40f4-8d93-c0e6c5ecce6e.png)
+
+That's it folks. I hope all of this is of some help.
