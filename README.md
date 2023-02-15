@@ -22,11 +22,11 @@ The operating system on your workstation can be either Linux, Windows or iOS. It
 
 You will also need an image of the lastest Raspberry Pi OS or at least the rpi-imager. I recommend to download the image and using balenaEtcher to flash the drive.
 
-First time you start you Pi with the new OS it will take some time. Later the boot process will be faster. Answer the questions about specific settings, e.g. ssh should be activated and possibly also VNC. At this point, a connected monitor will do just fine, as will a keyboard. Later, access will be via ssh, but that's not available to us yet.
+First time you start your Pi with the new OS it will take some time. Later the boot process will be faster. Answer the questions about specific settings, e.g. ssh should be activated and possibly also VNC. At this point, a connected monitor will do just fine, as will a keyboard. Later, access will be via ssh, but that's not available to us yet.
 
-By the way, if the installation was done with the rpi-imager, you will be asked in advance whether ssh should be activated. You will also be asked for the country and keyboard settings. In my case, it was still necessary to set these settings after the first boot.
+By the way, if the installation will be done with the rpi-imager, you will be asked in advance whether ssh should be activated. You will also be asked for the country and keyboard settings. In my case, it was still necessary to set these settings after the first boot.
 
-At this point it might be a good idea to update the system and install Midnight Commander:
+At this point it might be a good idea to update the system and, perhaps, install Midnight Commander:
 
 ```
 $apt update
@@ -34,7 +34,9 @@ $apt upgrade
 $apt install mc
 ```
 
-We will use Midnight Commander later for navigating through the file system. Almost all operations require elevated privileges, in other words, you must be root.
+You can use Midnight Commander later for navigating through the file system. In my opinion this gives a better overview and the navigation is a bit faster (e.g. `Ctrl-Page up` / `Strg-Bild hoch` jumps to the next higher directory - with the root directory being the highest. Additionally, with the hotkey F3 you have a file viewer, and with F4 an editor at hand. Almost all operations require elevated privileges, in other words, you must be root.
+
+You can start Midnight Commander with `sudo mc` to prevent typing sudo every time you want to edit a file. But be careful. In this mode you can cause a lot of mischief by accident. The shortcut `Ctrl-o` puts Midnight Commander in the background, pushing it again brings it back in the foreground. This is useful if you need to use the console and want to read the output of a command, e.g., `$systemctl status hciuart.service` wich we want to invoke now.
 
 ### _Known Issues_
 With a freshly installed system with 'bullseye' you might run into the issue that hciuart.service failed to start. In this case `$systemctl status hciuart.service` (with elevated rights) shows this:
@@ -102,7 +104,7 @@ $systemctl restart bluetooth.service
 
 (source: <https://raspberrypi.stackexchange.com/questions/40839/sap-error-on-bluetooth-service-status>)
 
-Well, that's a false flag, but at least one error message is gone. However, the next start is coming and you will face the same problem: hciuart.service fails to start. The problem is more likely that the BT modem is initialized too late.
+Now, hciuart.service should be up and running, but well, that's a false flag. At least one error message is gone. However, the next start is coming and you will face the same problem: hciuart.service fails to start. The problem is more likely that the BT modem is initialized too late.
 
 |‼️| What actually helps is a new entry in the _/boot/config.txt_ file: `dtparam=krnbt`, wich gives the kernel the task of initializing the BT modem. There are already entries starting with dtparam=, I added the new one there and it seems to help. This will probably become the standard in the future from what I've heard. At this point, a big thank you [@pelwell](/../../../../pelwell) for the [crucial hint](https://github.com/RPi-Distro/pi-bluetooth/issues/25#issuecomment-1426768853). |‼️|
 |:-:|:-|:-:|
@@ -300,8 +302,6 @@ server:
 Now we can tell Pi-hole, that we have a local DNS. From your workstation open Pi-hole in your webbrowser using the following address:
 
 `http://IP-address-of-the-raspberrypi/admin/`.
-
-We must provide the static IP address that we have defined in the router. The localhost address (127.0.0.1) won't work.
 
 Once you are logged in, navigate to the DNS page under `Settings`:
 
