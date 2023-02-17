@@ -308,7 +308,7 @@ In the next screen you can enter the IP address:
 
 Leave all other fields untouched.
 
-If you have no internet access after the reboot, you can try to provide `::1` in the field Custom 3 (IPv6) on the [DNS settings page](/../../../../TomfromBerlin/Debian-Pihole-Unbound/edit/main/README.md#pi-hole-and-unbound) of Pi-hole. This worked for me. You may notice the little yellow dot in the upper left area. This signals that there might be an issue. Clicking on this will bring you to the following screen:
+If you have no internet access after the reboot, you can try to provide `::1` in the field Custom 3 (IPv6) on the [DNS settings page](/../../../../TomfromBerlin/Debian-Pihole-Unbound/blob/main/README.md#pi-hole-and-unbound) of Pi-hole. This worked for me. You may notice the little yellow dot in the upper left area. This signals that there might be an issue. Clicking on this will bring you to the following screen:
 
 ![pihole-warning](https://user-images.githubusercontent.com/123265893/218285573-443eb6fa-7344-4600-a8a0-a51d4907f54a.png)
 
