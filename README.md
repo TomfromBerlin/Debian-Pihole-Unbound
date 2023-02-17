@@ -191,26 +191,16 @@ To this file probably only one or two changes are necessary, since during the in
 ```
 # fallback to static profile on eth0
 ```
-Below this line should be the IP addresses of your Raspberry Pi and your router. It will look like this:
+Below this line should be the IP addresses of your Raspberry Pi, your router, and the DNS. It will look like this (of course, it's not really a table):
 
-```
-#interface eth0                                   do not touch this line, its just a comment
-#fallback static_eth0                             do not touch this line, its just a comment
-
-interface eth0                                    interface name, you shouldn't use a WiFi connection
-
-static ip_address=192.168.xxx.xxx/24         <--- this has to be the IP address of your Raspberry Pi, under
-                                                  which the little rascal can be reached in the home network.
-
-static routers=192.168.xxx.xxx               <--- this has to be the IP address of your router,
-                                                  default is 192.168.178.1
-
-static domain_name_servers=127.0.0.1#5335    <--- this will be the IP address of the DNS;
-                                                  note the port address behind the IP,
-                                                  This is important and should be included if not present.
-                                                  It probably won't be there because no one knows yet that
-                                                  this port is needed.
-```
+| Entry | Description |
+|:-|:-|
+| #interface eth0 | do not touch this line |
+| #fallback static_eth0 | do not touch this line |
+| interface eth0 | interface name, "eth" indicates a cable connection using an ethernet card, where the number at the end indicates the number of the interface; you shouldn't use a WiFi connection as it is considered unstable|
+| static ip_address=192.168.xxx.xxx/24 | <--- this has to be the IP address of your Raspberry Pi, under which the little rascal can be reached in the home network |
+| static routers=192.168.xxx.xxx | <--- this has to be the IP address of your router, default is 192.168.178.1 |
+| static domain_name_servers=127.0.0.1#5335 | <--- this will be the IP address of the DNS (it has to be the localhost addess); note the port address behind the IP, this is important and should be included if not present; it probably won't be there because no one knows yet that this port is needed |
 
 The static IP address and the address of your router depend on the home network address space specified in the router. These settings must match the settings in your router. The address space between 192.168.0.1 and 192.168.255.254 is usually used for home networks and not for public networks. In this way, every device and every application "knows" whether it is in the home network or not. The Fritzbox uses this as default setting, so it might look similar at your site and only the IP address for the Raspberry Pi has to be changed, if its not correct. The port address after 127.0.0.1 has to be inserted. Now, we're done with this file.
 
@@ -231,7 +221,7 @@ As a reminder: at the moment the Fritzbox is still our DNS and it asks DNS.Watch
 
 #### _/etc/resolvconf.conf_
 
-Recent Debian-based OS releases auto-install a package called `openresolv`, which will cause unexpected behaviour for pihole and unbound. Openresolv's service/config instructs resolvconf to write unbound's own DNS service at nameserver 127.0.0.1 , but without the 5335 port, into the file /etc/resolv.conf. That /etc/resolv.conf file is used by local services/processes to determine DNS servers configured. You need to remove openresolv, or edit the configuration file and disable the service to work-around the misconfiguration.
+Recent Debian-based OS releases auto-install a package called `openresolv`, which will cause unexpected behaviour for pihole and unbound. Openresolv's service/config instructs resolvconf to write unbound's own DNS service at nameserver 127.0.0.1 , but without the 5335 port, into the file /etc/resolv.conf (see previous section). That /etc/resolv.conf file is used by local services/processes to determine DNS servers configured. You need to remove openresolv and disable the service, or modify the configuration file to work-around the misconfiguration.
 
 There are two options to solve the problem and some will choose
 
@@ -253,7 +243,7 @@ or deleted
 
 `rm /etc/unbound/unbound.conf.d/resolvconf_resolvers.conf`
 
-By simply removing the file and restart Unbound then it works correctly as a recursive DNS. The problem is that after a while this file is being auto generated again, this didn't happen in Buster but it is happening now in Bullseye because of the `openresolv` package. To prevent this, the /etc/resolvconf.conf file must be modified as described above or you choose
+By simply removing the file and restart Unbound then it works correctly as a recursive DNS. The problem is that after a while this file is being auto generated again, this didn't happen in Buster but it is happening now in Bullseye because of the `openresolv` package. To prevent this, the /etc/resolvconf.conf file must be modified as described above, or you choose
 
 ##### _The easy way_
 
@@ -272,11 +262,11 @@ Then delete the file
 
 `rm /etc/unbound/unbound.conf.d/resolvconf_resolvers.conf`.
 
-More information you can find [here](https://docs.pi-hole.net/guides/dns/unbound/#disable-resolvconf-entry-for-unbound-required-for-debian-bullsye-releases).
+More information can be found [here](https://docs.pi-hole.net/guides/dns/unbound/#disable-resolvconf-entry-for-unbound-required-for-debian-bullsye-releases).
 
 #### _/etc/dnsmasq.d/99-edns.conf_
 
-You should consider adding `edns-packet-max=1232` to a config file like /etc/dnsmasq.d/99-edns.conf to signal FTL to adhere to this limit.
+You should consider adding `edns-packet-max=1232` to a configuration file like /etc/dnsmasq.d/99-edns.conf to signal FTL to respect the limit.
 
 #### _/etc/unbound/unbound.conf.d/pi-hole.conf_
  
@@ -288,14 +278,9 @@ This is the culprit. Delete or rename the file and disable the unbound-resolvcon
 
 #### _/etc/unbound/unbound.conf.d/root-auto-trust-anchor-file.conf_
 
-The content of this file should look like this:
+The root anchor key file, that is read in and written out. Default is /usr/share/dns/root.key. If the file does not exist, or is empty, a builtin root key is written to it. If you have installed Unbound from the Debian repository the package unbound-anchor has been installed as a dependency, so this file should already exist and you don't need to touch it.
 
-```
-server:
-    # The following line will configure unbound to perform cryptographic
-    # DNSSEC validation using the root trust anchor.
-    auto-trust-anchor-file: "/var/lib/unbound/root.key"
-```
+Also, you don't need to download the root.hints file if you installed Unbound from the Debian repositories as it will be installed and updated automatically. Unbound uses this file to bootstrap domain resolution.
 
 ## _Pi-hole and Unbound_
 
@@ -311,7 +296,7 @@ Type `127.0.0.1#5335`in the field Custom1 (IPv4).
 
 Now you can restart your Raspberry Pi.
 
-But one last thing has to be done: the router must know, that he isn't responsible anymore for DNS resolving. This will be achived by setting the IPv4 address of the lokal DNS in your router to the IP address of the RaspBerry Pi.
+But one last thing needs to be done: the router needs to know that it is no longer responsible for DNS resolution. You can achieve this by setting the IPv4 address of the local DNS in your router to the IP address of the Raspberry Pi.
 
 To do this click on the button IPv4 Settings in the lower right corner.
 
