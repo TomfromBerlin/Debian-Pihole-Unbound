@@ -26,7 +26,9 @@ First time you start your Pi with the new OS it will take some time. Later the b
 
 By the way, if the installation will be done with the rpi-imager, you will be asked in advance whether ssh should be activated. You will also be asked for the country and keyboard settings. In my case, it was still necessary to set these settings after the first boot.
 
-At this point it might be a good idea to update the system and, perhaps, install Midnight Commander:
+From this point on, everything can be done via ssh.
+
+Now it might be a good idea to update the system and, perhaps, install Midnight Commander:
 
 ```
 $apt update
@@ -135,9 +137,9 @@ Log in to your Pi-hole and click on 'ADLISTS'. You should now see this page:
 
 ![pi-hole_adlists](https://user-images.githubusercontent.com/123265893/218336144-76b6f54d-b967-422d-bfd8-02afa6872aeb.png)
 
-You can add multiple lists by separating each entry with a space. In other words: you can mark all lists at once, rightclick and copy them to you clipboard. Then you can paste them in the address field in Pi-hole. After adding the lists you have to run `pihole -g` to update your gravity list. You can do this also within the Pi-hole interface, but then you have to keep this site open until the update is done. I recommend the command line.
+You can add multiple lists by separating each entry with a space. In other words: you can mark all lists at once, rightclick and copy them to the clipboard. Then you can paste them in the address field in Pi-hole. After adding the lists you have to run `pihole -g` to update your gravity database. You can do this also within the Pi-hole interface, but then you have to keep this site open until the update is done. I recommend the command line.
 
-If you forgot the password for Pi-hole that has been shown during the installation process just click `Forgot password`. You'll get instructions how to define a new password. An ssh connection would be very handy this moment.
+If you forgot the password for Pi-hole that has been shown during the installation process just click `Forgot password`. You'll get instructions how to set a new password. An ssh connection would be very handy this moment.
 
 By the way, a cron job is created during the installation process to update Pi-hole and your Gravity database regularly. The command `ls -l /etc/cron*` shows all running cron jobs. The output looks like this:
 
