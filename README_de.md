@@ -1,5 +1,3 @@
-| ![Benutzerdefiniertes Abzeichen](https://img.shields.io/endpoint?color=green&label=Views&logo=Debian&logoColor=red&style=plastic&url=https%3A%2F%2Fhits.dwyl.com%2FTomfromBerlin%2FDebian-Pihole-Unbound) | ![Benutzerdefiniertes Abzeichen](https://img.shields.io/endpoint?color=green&label=Unique%20Viewers&logo=Raspberry%20Pi&logoColor=pink&style=plastic&url=https%3A%2F%2Fhits.dwyl.com%2FTomfromBerlin%2FDebian-Pihole-Unbound.svg%3Fshow%3Dunique) | 
-|-|-| 
 # _Debian (Bullseye) mit Pi-hole & Unbound & Fritzbox 7490_ 
 Dies ist ein Versuch zu zeigen, wie Pi-hole und Unbound dazu gebracht werden können, unter Debian (Bullseye) zu arbeiten. Hol dir eine Tasse Kaffee oder Tee, es gibt viel zu lesen.
 
