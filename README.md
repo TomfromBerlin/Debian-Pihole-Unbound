@@ -3,7 +3,7 @@
 # _Debian (bullseye) with Pi-hole & Unbound & Fritzbox 7490_
 This is an attempt to show how Pi-hole and Unbound can be made to work on Debian (Bullseye). You should grab a cup of coffee or tea as there is a lot to read.
 
-| The way described here worked for me. I can't say if it works for you too. But maybe this description will help you to find the right path for you. Good luck with it. |
+| Disclaimer: The way described here worked for me. I can't say if it works for you too. But maybe this description will help you to find the right path for you. However, there is no warranty of any kind. Good luck with it. |
 |:-|
 
 A further description of how it all works can be found here: <https://docs.pi-hole.net/guides/dns/unbound/#>
@@ -95,7 +95,7 @@ If you don't want to overwrite the system bluetooth.service file, it's a good pl
      
 4) save with `Ctrl-o`/`Strg-o`; exit nano with `Ctrl-x`/`Strg-x`.
 
-_The simplest explanation is that it clears out the value of ExecStart= so we can override it rather than append to it. Some SystemD settings behave as an appended list when specifying them multiple times. The third line defines the new value of ExecStart=_
+_(Simple) explanation: it clears out the value of ExecStart= so the value can be overwritten instead of being appended to it. Some SystemD settings behave as an appended list when specifying them multiple times. The third line defines the new value of ExecStart=_
 
 Then enter the following commands in the command line:
 
@@ -206,7 +206,7 @@ Below this line should be the IP addresses of your Raspberry Pi, your router, an
 
 The static IP address and the address of your router depend on the home network address space specified in the router. These settings must match the settings in your router. The address space between 192.168.0.1 and 192.168.255.254 is usually used for home networks and not for public networks. In this way, every device and every application "knows" whether it is in the home network or not. The Fritzbox uses this as default setting, so it might look similar at your site and only the IP address for the Raspberry Pi has to be changed, if its not correct. The port address after 127.0.0.1 has to be inserted. Now, we're done with this file.
 
-When you have made the changes, do not restart the dhcp server since this may lead to a loss of the internet connection. We will do a reboot later, when everything is done.
+When you have made the changes, do not restart the dhcp server since this may lead to a (temporary) loss of the internet connection. We will do a reboot later, when everything is done.
 
 #### _/etc/resolv.conf_
 
@@ -223,13 +223,13 @@ As a reminder: at the moment the Fritzbox is still our DNS and it asks DNS.Watch
 
 #### _/etc/resolvconf.conf_
 
-Recent Debian-based OS releases auto-install a package called `openresolv`, which will cause unexpected behaviour for pihole and unbound. Openresolv's service/config instructs resolvconf to write unbound's own DNS service at nameserver 127.0.0.1 , but without the 5335 port, into the file /etc/resolv.conf (see previous section). That /etc/resolv.conf file is used by local services/processes to determine DNS servers configured. You need to remove openresolv and disable the service, or modify the configuration file to work-around the misconfiguration.
+Recent Debian-based OS releases auto-install a package called `openresolv`, which will cause unexpected behaviour for Pi-hole and Unbound. Openresolv's service/config instructs resolvconf to write unbound's own DNS service at nameserver 127.0.0.1, but without the 5335 port, into the file `/etc/resolv.conf` (see previous section). That `/etc/resolv.conf` file is used by local services/processes to determine DNS servers configured. You need to remove openresolv and disable the service, or modify the configuration file to work-around the misconfiguration.
 
 There are two options to solve the problem and some will choose
 
 ##### _The hard way_
 
-just in case `unbound-resolvconf.service` is needed someday. In this case you need to modify `/etc/resolvconf.conf`. At the very end of the file you will find the following line:
+just in case `unbound-resolvconf.service` is needed someday. In this case you need to modify `/etc/resolvconf.conf`. Almost at the end of the file you will find the following line:
 
 `unbound_conf=/etc/unbound/unbound.conf.d/resolvconf_resolvers.conf`
 
@@ -249,7 +249,7 @@ By simply removing the file and restart Unbound then it works correctly as a rec
 
 ##### _The easy way_
 
-Check, if unbound-resolvconf.service is active with `$systemctl status unbound-resolvconf.service`
+Check if unbound-resolvconf.service is active with `$systemctl status unbound-resolvconf.service`
 
 If it's running (it probably will on Bullseye), just disable it with the following commands:
 
@@ -268,7 +268,12 @@ More information can be found [here](https://docs.pi-hole.net/guides/dns/unbound
 
 #### _/etc/dnsmasq.d/99-edns.conf_
 
-You should consider adding `edns-packet-max=1232` to a configuration file like /etc/dnsmasq.d/99-edns.conf to signal FTL to respect the limit.
+The developers suggest considering adding `edns-packet-max=1232` to a configuration file like `/etc/dnsmasq.d/99-edns.conf` to signal FTL to respect the limit.
+```
+$touch /etc/dnsmasq.d/99-edns.conf
+$nano /etc/dnsmasq.d/99-edns.conf
+```
+Insert `edns-packet-max=1232`, save the file and exit the editor, or use Midnight Commander to perform these operations.
 
 #### _/etc/unbound/unbound.conf.d/pi-hole.conf_
  
@@ -288,7 +293,7 @@ Also, you don't need to download the root.hints file if you installed Unbound fr
 
 Now we can tell Pi-hole, that we have a local DNS. From your workstation open Pi-hole in your webbrowser using the following address:
 
-`http://IP-address-of-the-raspberrypi/admin/`.
+`http://IP-address-of-the-raspberrypi/admin/` (do not use the localhost address, use the one specified in the router)
 
 Once you are logged in, navigate to the DNS page under `Settings`:
 
@@ -296,9 +301,9 @@ Once you are logged in, navigate to the DNS page under `Settings`:
 
 Type `127.0.0.1#5335`in the field Custom1 (IPv4).
 
-Now you can restart your Raspberry Pi.
+Now the Raspberry Pi can be restarted.
 
-But one last thing needs to be done: the router needs to know that it is no longer responsible for DNS resolution. You can achieve this by setting the IPv4 address of the local DNS in your router to the IP address of the Raspberry Pi.
+But one last thing needs to be done: the router needs to know that it is no longer responsible for DNS resolution. This can be achieved by setting the IPv4 address of the local DNS in your router to the IP address of the Raspberry Pi.
 
 To do this click on the button IPv4 Settings in the lower right corner.
 
@@ -308,9 +313,9 @@ In the next screen you can enter the IP address:
 
 ![Heimnetz-netzwerk-ip4_einstellungen](https://user-images.githubusercontent.com/123265893/218287360-216c02ec-75c8-48c7-ac79-feeecf985de3.PNG)
 
-Leave all other fields untouched.
+The localhost address must not be used here either, but the IP address under which the Raspberry Pi can be found in the network must be specified. Leave all other fields untouched.
 
-If you have no internet access after the reboot, you can try to provide `::1` in the field Custom 3 (IPv6) on the [DNS settings page](/../../../../TomfromBerlin/Debian-Pihole-Unbound/blob/main/README.md#pi-hole-and-unbound) of Pi-hole. This worked for me. You may notice the little yellow dot in the upper left area. This signals that there might be an issue. Clicking on this will bring you to the following screen:
+If you have no internet access after reboot, you can try to provide `::1` in the field Custom 3 (IPv6) on the [DNS settings page](/../../../../TomfromBerlin/Debian-Pihole-Unbound/blob/main/README.md#pi-hole-and-unbound) of Pi-hole. This worked for me. You may notice the little yellow dot in the upper left area. This signals that there might be an issue. Clicking on this will bring you to the following screen:
 
 ![pihole-warning](https://user-images.githubusercontent.com/123265893/218285573-443eb6fa-7344-4600-a8a0-a51d4907f54a.png)
 
@@ -320,12 +325,14 @@ But there's that little, tiny, yellow dot in the top left... And this is where t
 
 When you now search for a website for the first time, it may take a while to be found. The second call and every further one is processed in no time at all.
 
-First search (look for the query time):
+First search with `dig pi-hole.net 127.0.0.1 -p 5335` (note the 'Query time', fourth line from the bottom)):
 
 ![first-dig-noerror-107ms](https://user-images.githubusercontent.com/123265893/218286774-15835d42-a999-4db4-8456-d7940ba678b8.png)
 
 Second search:
 
 ![second-dig-noerror-0ms](https://user-images.githubusercontent.com/123265893/218286806-2a52dcf4-bc63-40f4-8d93-c0e6c5ecce6e.png)
+
+The fourth line from the top should read `status: NOERROR`. If an error occurs, then something is wrong, obviously. Review all the steps that have been taken. Maybe there's a typo or something. If there is an error in the tutorial, I would be very grateful for information about it. Use the [discussion site](/../../../../TomfromBerlin/Debian-Pihole-Unbound/discussions) for that or report an [issue](/../../../../TomfromBerlin/Debian-Pihole-Unbound/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc).
 
 That's it folks. I hope all of this is of some help.
