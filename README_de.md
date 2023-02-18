@@ -71,7 +71,7 @@ Feb 11 12:08:05 raspberrypi systemd[1]: Failed to start Configure Bluetooth Mode
 Du kannst versuchen, dies mit den folgenden Schritten zu beheben (als root):
 
 1) den Befehl `$nano /etc/systemd/system/bluetooth.target.wants/bluetooth.service` auf der Kommandozeile eingeben
-2) die Zeile `ExecStart=/usr /lib/bluetooth/bluetoothd` nach `ExecStart=/usr/lib/bluetooth/bluetoothd --noplugin=sap` ändern
+2) die Zeile `ExecStart=/usr/lib/bluetooth/bluetoothd` nach `ExecStart=/usr/lib/bluetooth/bluetoothd --noplugin=sap` ändern
 3) die Datei mit `Ctrl-o`/`Strg-o` speichern und nano mit `Ctrl-x `/`Strg-x` beenden
 4) Systemd neu laden: `$systemctl daemon-reload`
 5) Bluetooth neu starten: `$service bluetooth restart`
@@ -92,7 +92,7 @@ Die Ausgabe von `$systemctl status hciuart.service` vermittelt jetzt, dass alles
 
 Wenn die Systemdatei bluetooth.service nicht verändert werden soll, kann eine .service.d-Überschreibung verwendet werden:
 
-1) neues Verzeichnis erstellen mit `$mkdir /etc/ systemd/system/bluetooth.service.d/`
+1) neues Verzeichnis erstellen mit `$mkdir /etc/systemd/system/bluetooth.service.d/`
 2) eine neue Datei anlegen mit: `$touch /etc/systemd/system/bluetooth.service.d/01-disable-sap-plugin.conf`
 3) die Datei bearbeiten mit: `$nano /etc/systemd/system/bluetooth.service.d/01-disable-sap-plugin.conf`
     Die folgenden drei Zeilen in die datei einfügen:
@@ -157,9 +157,9 @@ Wenn du das Passwort für Pi-hole vergessen hast, das während des Installations
 
 ![cronjob](https://user-images.githubusercontent.com/123265893/218337237-dd2cf85c-af31-453b-a2a0-fa37ecd07b2e.png) 
 
-Um sicherzustellen, dass Pi-hole funktioniert, muss der Router und Pi-hole [konfiguriert](https://docs.pi-hole.net/main/post-install/) werden. Es empfiehlt sich, eine statische IP für Ihren Raspberry Pi zu haben, da sonst Probleme auftreten können, spätestens wenn Unbound als lokaler DNS ausgeführt wird. Aber das ist bereits getan und sollte kein Problem mehr darstellen.
+Um sicherzustellen, dass Pi-hole funktioniert, muss der Router und Pi-hole [konfiguriert](https://docs.pi-hole.net/main/post-install/) werden. Es empfiehlt sich, eine statische IP den Raspberry Pi einzurichten, da sonst Probleme auftreten können - spätestens wenn Unbound als lokaler DNS ausgeführt wird. Aber das ist bereits getan und sollte kein Problem mehr darstellen.
 
-Außerdem habe ich Pi-hole NICHT als DHCP-Server eingerichtet. Das überlasse ich der Fritzbox. Angenommen, der Raspberry Pi funktioniert nicht und Pi-hole ist der DHCP-Server, dann ist jeder im Netzwerk blind, taub und stumm und dann muss wahrscheinlich der Router zurückgesetzt werden. Das wäre wirklich ärgerlich.
+Außerdem habe ich Pi-hole **NICHT** als DHCP-Server eingerichtet. Das überlasse ich der Fritzbox. Angenommen, der Raspberry Pi funktioniert nicht und Pi-hole ist der DHCP-Server, dann ist jedes Gerät im Netzwerk blind, taub und stumm und dann muss wahrscheinlich der Router zurückgesetzt werden. Das wäre wirklich ärgerlich.
 
 Die DNS-Einstellungen im Pi-hole sollten vorerst so aussehen:
 
@@ -173,7 +173,7 @@ Jetzt sollte Pi-hole betriebsbereit sein und du kannst dir eine weitere Tasse Ka
 
 Um Unbound zur Zusammenarbeit zu bewegen, sind unter Debian Bullseye einige Schritte mehr nötig, als uns diverse Anleitungen im Internet versprechen. Es reicht nicht aus, es einfach zu installieren, aber es ist offensichtlich notwendig. In unserem Fall verwenden wir einfach die Version, die in den Debian-Standard-Repositories zu finden ist. Dies ist derzeit die Version 1.9.xx. Auf GitHub gibt es eine [neuere Version](/../../../../NLnetLabs/unbound)), aber die Verwendung des Pakets aus dem Standard-Repo vermeidet Kompilierungs- und Aktualisierungsprobleme.
 
-|Wo wir gerade dabei sind: Ich kann nicht sagen, ob die hier gezeigten Schritte für spätere Versionen notwendig sind oder ob eine Neukonfiguration sogar zwingend erforderlich ist. Gerüchten zufolge benötigen neuere Versionen von Unbound bestimmte hier beschriebene Änderungen nicht mehr. Sie können dann überschrieben werden und alles läuft wie am Schnürchen - oder auch nicht. Die Zeit wird es zeigen.|
+| Wo wir gerade dabei sind: Ich kann nicht sagen, ob die hier gezeigten Schritte für spätere Versionen notwendig sind oder ob eine Neukonfiguration sogar zwingend erforderlich ist. Gerüchten zufolge benötigen neuere Versionen von Unbound bestimmte hier beschriebene Änderungen nicht mehr. Sie können dann überschrieben werden und alles läuft wie am Schnürchen - oder auch nicht. Die Zeit wird es zeigen. |
 |:-|
 
 Hier ist eine Übersicht über die Dateien, die in irgendeiner Weise eine Rolle spielen werden, und die Verzeichnisse, in denen sie zu finden sind:
@@ -194,18 +194,18 @@ Hier ist eine Übersicht über die Dateien, die in irgendeiner Weise eine Rolle 
                root-auto-trust-anchor-file.conf (file)
 ```
 
-Wie man sieht, findet das Ganze im Verzeichnis /etc/ oder in Unterverzeichnissen von /etc/ statt. Daher sind für jeden Schreibvorgang root-Rechte erforderlich. Ich werde das nicht jedes Mal erwähnen. 
+Wie zu sehen ist, findet das Ganze im Verzeichnis /etc/ oder in Unterverzeichnissen von /etc/ statt. Daher sind für jeden Schreibvorgang root-Rechte erforderlich. Ich werde das nicht jedes Mal erwähnen. 
 
 Im Folgenden gehen wir Schritt für Schritt jede einzelne Datei durch und am Ende sollte Unbound gut mit Pi-hole funktionieren und die DNS-Anfragen entsprechend beantworten. 
 
 #### /etc/dhcpcd.conf 
 
-An dieser Datei sind wohl nur ein bis zwei Änderungen nötig, da während der Installation von Pi-hole die meisten benötigten Einträge geschrieben werden. Ganz am Ende dieser Datei finden Sie die folgende Zeile: 
+An dieser Datei sind wohl nur ein bis zwei Änderungen nötig, da während der Installation von Pi-hole die meisten benötigten Einträge geschrieben werden. Ganz am Ende dieser Datei ist die folgende Zeile zu finden:
 
 ``` 
 # fallback to static profile on eth0 
 ``` 
-Unter dieser Zeile sollten die IP-Adressen Ihres Raspberry Pi, Ihres Routers und des DNS stehen und es wird wohl so ähnlich wie hier aussehen (natürlich ist es nicht wirklich eine Tabelle und es gibt keine Kommentare): 
+Unter dieser Zeile sollten die IP-Adressen Ihres Raspberry Pi, Ihres Routers und des DNS stehen und es wird wohl so ähnlich wie hier aussehen (natürlich ist es nicht wirklich eine Tabelle und es gibt keine Kommentare):
 
 | Eintrag | Beschreibung |
 |:-|:-|
@@ -218,11 +218,11 @@ Unter dieser Zeile sollten die IP-Adressen Ihres Raspberry Pi, Ihres Routers und
 
 Die statische IP-Adresse und die Adresse des Routers hängen von dem im Router festgelegten Adressraum des Heimnetzwerks ab. Diese Einstellungen müssen mit den Einstellungen in Ihrem Router übereinstimmen. Der Adressraum zwischen 192.168.0.1 und 192.168.255.254 wird normalerweise für Heimnetzwerke und nicht für öffentliche Netzwerke verwendet. Auf diese Weise „weiß“ jedes Gerät und jede Anwendung, ob es/sie sich im Heimnetz befindet oder nicht. Die Fritzbox verwendet dies als Standardeinstellung,daher wird es bei dir ähnlich aussehen und nur die IP-Adresse für den Raspberry Pi muss geändert werden, wenn sie nicht korrekt ist. Die Portadresse `#5335` nach 127.0.0.1 muss wahrscheinlich noch eingefügt werden. Jetzt sind wir mit dieser Datei fertig.
 
-Wenn die Änderungen vorgenommen wurden, den DHCP-Server nicht neu starten, da dies zu einem Verlust der Internetverbindung führen kann. Wir werden später einen Neustart durchführen, wenn alles erledigt ist. 
+Wenn die Änderungen vorgenommen wurden, den DHCP-Server nicht neu starten, da dies zu einem Verlust der Internetverbindung führen kann. Wir werden später einen Neustart durchführen, wenn alles erledigt ist.
 
-#### _/etc/resolv.conf_ 
+#### _/etc/resolv.conf_
 
-Diese Datei enthält nur zwei Zeilen: 
+Diese Datei enthält nur zwei Zeilen:
 
 ```
 # Generated by resolvconf
@@ -233,19 +233,19 @@ Die erste Zeile sagt uns, dass dies eine generierte Datei ist, daher bleiben Inh
 
 Zur Erinnerung: im Moment ist die Fritzbox noch unser DNS und sie fragt einen öffentlichen DNS (hier DNS.Watch), wenn sie die angeforderte Adresse selbst nicht kennt. Aber das wollen wir ändern, also weiter im Text.
 
-#### _/etc/resolvconf.conf_ 
+#### _/etc/resolvconf.conf_
 
 Neuere Debian-basierte OS-Releases installieren automatisch ein Paket namens `openresolv`, das zu unerwartetem Verhalten von Pi-hole und Unbound führt. Openresolvs service/config weist resolvconf an, den eigenen DNS-Dienst von Unbound auf dem Nameserver 127.0.0.1, aber ohne den Port 5335, in die Datei /etc/resolv.conf zu schreiben (siehe vorheriger Abschnitt). Diese Datei /etc/resolv.conf wird von lokalen Diensten/Prozessen verwendet, um die konfigurierten DNS-Server zu bestimmen. Openresolv muss entfernt und der Dienst deaktiviert werden. Oder die Konfigurationsdatei muss geändert werden, um die Fehlkonfiguration zu umgehen.
 
-Es gibt zwei Möglichkeiten, das Problem zu lösen, und einige werden 
+Es gibt zwei Möglichkeiten, das Problem zu lösen, und einige werden
 
 ##### _den schweren Weg_
 
 wählen nur für den Fall, dass `unbound-resolvconf.service` eines Tages benötigt wird. In diesem Fall muss `/etc/resolvconf.conf` modifiziert werden. Ganz am Ende der Datei ist die folgende Zeile zu finden:
 
-`unbound_conf=/etc/unbound/unbound.conf.d/resolvconf_resolvers.conf` 
+`unbound_conf=/etc/unbound/unbound.conf.d/resolvconf_resolvers.conf`
 
-Diese Zeile muss auskommentiert werden: 
+Diese Zeile muss auskommentiert werden:
 
 `#unbound_conf=/etc/unbound/unbound .conf.d/resolvconf_resolvers.conf`
 
@@ -261,32 +261,32 @@ gelöscht werden.
 
 Wird einfach die Datei entfernt und Unbound neu gestartet, funktioniert Unbound korrekt als rekursives DNS. Das Problem ist, dass die o.g. Datei nach einer Weile wieder automatisch generiert wird, was in Buster nicht passiert ist, aber jetzt in Bullseye wegen des `openresolv`-Pakets. Um dies zu verhindern, muss die Datei /etc/resolvconf.conf wie oben beschrieben modifiziert werden, oder du wählst
 
-##### _den leichten Weg_ 
+##### _den leichten Weg_
 
-Prüfe, mit `$systemctl status unbound-resolvconf.service `, ob unbound-resolvconf.service aktiv ist
+Prüfe mit `$systemctl status unbound-resolvconf.service `, ob unbound-resolvconf.service aktiv ist.
 
 Wenn es läuft (wahrscheinlich wird es das unter Bullseye), mit den folgenden Befehlen den Service deaktivieren:
 
-``` 
-$systemctl disable unbound-resolvconf.service 
-$systemctl stop unbound-resolvconf.service 
-``` 
+```
+$systemctl disable unbound-resolvconf.service
+$systemctl stop unbound-resolvconf.service
+```
 
 Dann die Datei löschen:
 
 `/etc/ unbound/unbound.conf.d/resolvconf_resolvers.conf`
 
-oder mit 
+oder mit
 
 `rm /etc/unbound/unbound.conf.d/resolvconf_resolvers.conf`
 
 umbenennen.
 
-Weitere Informationen sind [hier](https://docs.pi-hole.net/guides/dns/unbound/#disable-resolvconf-entry-for-unbound-required-for-debian-bullsye-releases) zu finden. 
+Weitere Informationen sind [hier](https://docs.pi-hole.net/guides/dns/unbound/#disable-resolvconf-entry-for-unbound-required-for-debian-bullsye-releases) zu finden.
 
-#### _/etc/dnsmasq.d/99-edns.conf_ 
+#### _/etc/dnsmasq.d/99-edns.conf_
 
-Die Entwickler empfehlen, `edns-packet-max=1232` zu einer Konfigurationsdatei wie /etc/dnsmasq.d/99-edns.conf hinzuzufügen, um FTL zu signalisieren diese Grenze zu respektieren. 
+Die Entwickler empfehlen, `edns-packet-max=1232` zu einer Konfigurationsdatei wie /etc/dnsmasq.d/99-edns.conf hinzuzufügen, um FTL zu signalisieren diese Grenze zu respektieren.
 
 #### _/etc/unbound/unbound.conf.d/pi-hole.conf_
  
@@ -294,11 +294,11 @@ Diese Datei enthält Einstellungen, die [hier](https://docs.pi-hole.net/guides/d
 
 #### _/etc/unbound/unbound.conf.d/resolvconf_resolvers.conf(.backup)_
 
-Dies ist der Übeltäter. Die Datei löschen oder umbenennen und den unbound-resolvconf.service deaktivieren oder zumindest /etc/resolvconf.conf [manipulieren](/../../../../TomfromBerlin/Debian-Pihole-Unbound/blob/main/README_de.md#den-schweren-Weg), um ihre Wiederbelebung zu verhindern. 
+Dies ist der Übeltäter. Die Datei löschen oder umbenennen und den unbound-resolvconf.service deaktivieren oder zumindest /etc/resolvconf.conf [manipulieren](/../../../../TomfromBerlin/Debian-Pihole-Unbound/blob/main/README_de.md#den-schweren-Weg), um ihre Wiederbelebung zu verhindern.
 
-#### _/etc/unbound/unbound.conf.d/root-auto-trust-anchor-file.conf_ 
+#### _/etc/unbound/unbound.conf.d/root-auto-trust-anchor-file.conf_
 
-Die Root-Anchor-Key-Datei, die eingelesen und ausgeschrieben wird. Standard ist /usr/share/dns/root.key. Wenn die Datei nicht existiert oder leer ist, wird ein eingebauter Schlüssel hineingeschrieben. Wenn Unbound aus dem Debian-Repository installiert wurde, wurde das Paket unbound-anchor als Abhängigkeit mitinstalliert, sodass diese Datei bereits vorhanden sein sollte und sie nicht bearbeitet werden muss. 
+Die Root-Anchor-Key-Datei, die eingelesen und ausgeschrieben wird. Standard ist /usr/share/dns/root.key. Wenn die Datei nicht existiert oder leer ist, wird ein eingebauter Schlüssel hineingeschrieben. Wenn Unbound aus dem Debian-Repository installiert wurde, wurde das Paket unbound-anchor als Abhängigkeit mitinstalliert, sodass diese Datei bereits vorhanden sein sollte und sie nicht bearbeitet werden muss.
 
 Außerdem muss die Datei root.hints nicht heruntergeladen werden, wenn Sie Unbound aus den Debian-Repositories installiert haben, da sie automatisch installiert und aktualisiert wird. Unbound verwendet diese Datei, um die Domänenauflösung zu bootstrappen.
 
@@ -314,7 +314,7 @@ Nach der Anmeldung unter „Einstellungen“ zur DNS-Seite navigieren:
 
 `127.0.0.1#5335` in das Feld Custom1 (IPv4) eingeben, speichern(!) und den Raspberry Pi neu starten.
 
-Aber noch etwas muss getan werden: Der Router muss wissen, dass er nicht mehr für die DNS-Auflösung zuständig ist. Dies wird erreicht, indem die IPv4-Adresse des lokalen DNS im Router auf die IP-Adresse des Raspberry Pi gesetzt wird. Dazu unten rechts auf die Schaltfläche IPv4-Einstellungen klicken. 
+Aber noch etwas muss getan werden: Der Router muss wissen, dass er nicht mehr für die DNS-Auflösung zuständig ist. Dies wird erreicht, indem die IPv4-Adresse des lokalen DNS im Router auf die IP-Adresse des Raspberry Pi gesetzt wird. Dazu unten rechts auf die Schaltfläche IPv4-Einstellungen klicken.
 
 ![Heimnetz-netzwerk-ip4-ip6_einstellungen-button](https://user-images.githubusercontent.com/123265893/218287228-8c4b4638-ab45-4ca6-ba06-bd89c64b04e1.png)
 
@@ -324,23 +324,22 @@ Im nächsten Bildschirm können Sie die IP eingeben Adresse:
 
 Alle anderen Felder unberührt lassen.
 
-Sollte nach dem Neustart kein Internetzugang zur Verfügung stehen, kann auf der 
-[DNS-Einstellungsseite](/../../.././TomfromBerlin/Debian-Pihole-Unbound/main/README_de.md#pi-hole-und-unbound) von Pi-hole im Feld `Custom IPv6` die Adresse `::1` eingegeben werden. Das hat bei mir funktioniert. Vielleicht hast Du den kleinen gelben Punkt im oberen linken Bereich bemerkt. Dieser signalisiert, dass möglicherweise ein Problem vorliegt. Ein Klick darauf öffnet folgende Seite: 
+Sollte nach dem Neustart kein Internetzugang zur Verfügung stehen, kann auf der [DNS-Einstellungsseite](/../../.././TomfromBerlin/Debian-Pihole-Unbound/main/README_de.md#pi-hole-und-unbound) von Pi-hole im Feld `Custom IPv6` die Adresse `::1` eingegeben werden. Das hat bei mir funktioniert. Vielleicht hast Du den kleinen gelben Punkt im oberen linken Bereich bemerkt. Dieser signalisiert, dass möglicherweise ein Problem vorliegt. Ein Klick darauf öffnet folgende Seite:
 
-![pihole-warning](https://user-images.githubusercontent.com/123265893/218285573-443eb6fa-7344-4600-a8a0-a51d4907f54a.png) 
+![pihole-warning](https://user-images.githubusercontent.com/123265893/218285573-443eb6fa-7344-4600-a8a0-a51d4907f54a.png)
 
 Dies sagt uns, die IP6-Adresse sei irgendwie redundant, da es sich um die IPv6-Adresse von localhost handelt, die bereits durch die IPv4-Adresse (127.0.0.1) definiert ist. Diese wird jetzt von Pi-Hole ignoriert und wir können das auch. Jetzt sollten wir von jedem Gerät in unserem Heimnetzwerk Internetzugang haben und jede Anfrage sollte von Unbound beantwortet und von Pi-Hole gefiltert werden.
 
-Aber da ist dieser kleine, winzige, gelbe Punkt oben links ... Und hier kommt das Seltsame ins Spiel: Die IP6-Adresse `::1` kann jetzt gelöscht werden und alles funktioniert immer noch. Sehr seltsam! 
+Aber da ist dieser kleine, winzige, gelbe Punkt oben links ... Und hier kommt das Seltsame ins Spiel: Die IP6-Adresse `::1` kann jetzt gelöscht werden und alles funktioniert immer noch. Sehr seltsam!
 
-Wenn Sie jetzt zum ersten Mal nach einer Website suchen, kann es eine Weile dauern, bis Sie gefunden werden. Der zweite Anruf und jeder weitere ist im Handumdrehen bearbeitet. 
+Wenn Sie jetzt zum ersten Mal nach einer Website suchen, kann es eine Weile dauern, bis Sie gefunden werden. Der zweite Anruf und jeder weitere ist im Handumdrehen bearbeitet.
 
-Erste Suche (achten Sie auf die Abfragezeit): 
+Erste Suche (achten Sie auf die Abfragezeit):
 
-![first-dig-noerror-107ms](https://user-images.githubusercontent.com/123265893/218286774-15835d42-a999-4db4-8456-d7940ba678b8.png) 
+![first-dig-noerror-107ms](https://user-images.githubusercontent.com/123265893/218286774-15835d42-a999-4db4-8456-d7940ba678b8.png)
 
-Zweitens Suche: 
+Zweitens Suche:
 
-![second-dig-noerror-0ms](https://user-images.githubusercontent.com/123265893/218286806-2a52dcf4-bc63-40f4-8d93-c0e6c5ecce6e.png) 
+![second-dig-noerror-0ms](https://user-images.githubusercontent.com/123265893/218286806-2a52dcf4-bc63-40f4-8d93-c0e6c5ecce6e.png)
 
 Das war's, Leute. Ich hoffe, das alles hilft etwas.
