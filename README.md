@@ -1,5 +1,6 @@
-| ![Custom badge](https://img.shields.io/endpoint?color=green&label=Views&logo=Debian&logoColor=red&style=plastic&url=https%3A%2F%2Fhits.dwyl.com%2FTomfromBerlin%2FDebian-Pihole-Unbound) | ![Custom badge](https://img.shields.io/endpoint?color=green&label=Unique%20Viewers&logo=Raspberry%20Pi&logoColor=pink&style=plastic&url=https%3A%2F%2Fhits.dwyl.com%2FTomfromBerlin%2FDebian-Pihole-Unbound.svg%3Fshow%3Dunique) |
- |-|-|
+| ![Views](https://img.shields.io/endpoint?color=green&label=Views&logo=Debian&logoColor=red&style=plastic&url=https%3A%2F%2Fhits.dwyl.com%2FTomfromBerlin%2FDebian-Pihole-Unbound) | ![Unique Viewers](https://img.shields.io/endpoint?color=green&label=Unique%20Viewers&logo=Raspberry%20Pi&logoColor=pink&style=plastic&url=https%3A%2F%2Fhits.dwyl.com%2FTomfromBerlin%2FDebian-Pihole-Unbound.svg%3Fshow%3Dunique) | ![DEBIAN](https://img.shields.io/badge/Debian-A81D33?style=for-the-badge&logo=debian&logoColor=white) | ![RaspberryPi](https://img.shields.io/badge/Raspberry%20Pi-A22846?style=for-the-badge&logo=Raspberry%20Pi&logoColor=white) | ![FRITZ!box 7490](https://user-images.githubusercontent.com/123265893/219904891-ab50d92a-ad69-480a-adc3-dd37b8a21534.svg) | [German Version](/../../../../TomfromBerlin/Debian-Pihole-Unbound/blob/main/README_de.md)|
+ |-|-|-|-|-|-|
+ 
 # _Debian (bullseye) with Pi-hole & Unbound & Fritzbox 7490_
 This is an attempt to show how Pi-hole and Unbound can be made to work on Debian (Bullseye). You should grab a cup of coffee or tea as there is a lot to read.
 
