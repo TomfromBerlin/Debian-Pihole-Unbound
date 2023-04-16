@@ -142,9 +142,9 @@ You can add multiple lists by separating each entry with a space. In other words
 
 If you forgot the password for Pi-hole that has been shown during the installation process just click `Forgot password`. You'll get instructions how to set a new password. An ssh connection would be very handy this moment.
 
-By the way, a cron job is created during the installation process to update Pi-hole and your Gravity database regularly. The command `ls -l /etc/cron*` shows all running cron jobs. The output looks like this:
+By the way, a cron job is created during the installation process to update your Gravity database regularly. The command `ls -l /etc/cron*` shows all running cron jobs. The output looks like this:
 
-![cronjob](https://user-images.githubusercontent.com/123265893/218337237-dd2cf85c-af31-453b-a2a0-fa37ecd07b2e.png)
+![pihole_cron](https://user-images.githubusercontent.com/123265893/232343061-90c3ba6e-e742-4012-897b-3f7cdf2605a6.png)
 
 To make sure Pi-hole is working, you have to [configure](https://docs.pi-hole.net/main/post-install/) your router and Pi-hole accordingly. It is recommended to have a static IP for your Raspberry Pi, otherwise you will run into problems, at the latest when running Unbound as local DNS. But we've already done that, so that shouldn't be an issue anymore.
 
@@ -160,7 +160,7 @@ Now, Pi-hole should be operational and you can grab another cup of coffee or tea
 
 ### _Unbound_
 
-In order to get Unbound to cooperate, under Debian Bullseye a few more steps are necessary than various instructions on the internet promise us. Just installing it is not enough, but it is obviously necessary. In our case we just use the version that can be found in the Debian default repositories. This is currently version 1.9.xx. On GitHub you'll find a [more recent version](/../../../../NLnetLabs/unbound)), but using the package from the standard repo avoids compiling and updating issues.
+In order to get Unbound to cooperate, under Debian Bullseye a few more steps are necessary than various instructions on the internet promise us. Just installing it is not enough, but it is obviously necessary. In our case we just use the version that can be found in the Debian default repositories. This is currently version 1.9.xx. On GitHub you'll find a [more recent version](/../../../../NLnetLabs/unbound), but using the package from the standard repo avoids compiling and updating issues.
 
 |While we're at it: I can't say whether the steps shown here are necessary for later versions or whether a reconfiguration is even mandatory. Rumor has it that newer versions of Unbound no longer need certain changes described here. They may then be overwritten and everything runs like clockwork - or not. Time will tell.|
 |:-|
@@ -326,13 +326,14 @@ But there's that little, tiny, yellow dot in the top left... And this is where t
 
 When you now search for a website for the first time, it may take a while to be found. The second call and every further one is processed in no time at all.
 
-First search with `dig pi-hole.net 127.0.0.1 -p 5335` (note the 'Query time', fourth line from the bottom)):
+First search with `dig nasa.gov 127.0.0.1 -p 5335` (note the 'Query time', fourth line from the bottom)):
 
-![first-dig-noerror-107ms](https://user-images.githubusercontent.com/123265893/218286774-15835d42-a999-4db4-8456-d7940ba678b8.png)
+![dig_nasa_1](https://user-images.githubusercontent.com/123265893/232343572-8fdddceb-88ae-46fc-8d0c-8c43429dfbb1.png)
 
 Second search:
 
-![second-dig-noerror-0ms](https://user-images.githubusercontent.com/123265893/218286806-2a52dcf4-bc63-40f4-8d93-c0e6c5ecce6e.png)
+![dig_nasa_2](https://user-images.githubusercontent.com/123265893/232343585-8d034f59-8185-4768-a1a3-a3952a025b48.png)
+
 
 The fourth line from the top should read `status: NOERROR`. If an error occurs, then something is wrong, obviously. Review all the steps that have been taken. Maybe there's a typo or something. If there is an error in the tutorial, I would be very grateful for information about it. Use the [discussion site](/../../../../TomfromBerlin/Debian-Pihole-Unbound/discussions) for that or report an [issue](/../../../../TomfromBerlin/Debian-Pihole-Unbound/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc).
 
