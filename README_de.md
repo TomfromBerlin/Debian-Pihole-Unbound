@@ -53,6 +53,9 @@ Das Tastenkürzel `Strg-o` versetzt Midnight Commander in den Hintergrund, erneu
 
 ## Bluetooth Service kann nicht gestartet werden
 
+|❗| Update 30.April 2023 | Nach der Systemaktualisierung hatte ich die gleichen Probleme mit Bluetooth wie unten beschrieben. Also habe ich versucht, bluetooth.service neu zu laden, nachdem die Boot-Sequenz beendet war, was nicht gelang. Ich beschloss, den hinzugefügten Eintrag in /etc/boot/config.txt `dtparam=krnbt` auszukommentieren. Nun, das System bootete ohne jegliche Beschwerden bezüglich Bluetooth. Ich werde das weiter beobachten und dieses Tutorial bei Bedarf aktualisieren. | OS: RaspiOS - Distribution: Debian GNU/Linux 11 (bullseye) 11 - Kernel Release: 6.1.21-v8+ - Kernel Version: #1642 SMP PREEMPT Mon Apr  3 17:24:16 BST 2023 - Architecture: aarch64 |❗|
+|-|-|:-|:-|-|
+
 Auf einem frisch installierten Debian (bullseye) System haben wir unter Umständen das Problem, dass hciuart.service nicht gestartet werden kann. Der Befehl `$systemctl status hciuart.service` (als root) zeigt dann dies:
 
 ```
