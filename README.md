@@ -43,8 +43,8 @@ You can start Midnight Commander with `sudo mc` to prevent typing sudo every tim
 
 ### _Known Issues_
 
-| Update April, 30th 2023 | After the system update I had the same problems with bluetooth as described below. So I tried to reload bluetooth.service after the boot sequence finished, which failed. I decided to comment out the added entry in /etc/boot/config.txt `dtparam=krnbt`. Well, the system booted without any complaints regarding Bluetooth. | OS: RaspiOS - Distribution: Debian GNU/Linux 11 (bullseye) 11 - Kernel Release: 6.1.21-v8+ - Kernel Version: #1642 SMP PREEMPT Mon Apr  3 17:24:16 BST 2023 - Architecture: aarch64 |
-|-|:-|:-|
+|❗| Update April, 30th 2023 | After the system update I had the same problems with bluetooth as described below. So I tried to reload bluetooth.service after the boot sequence finished, which failed. I decided to comment out the added entry in /etc/boot/config.txt `dtparam=krnbt`. Well, the system booted without any complaints regarding Bluetooth. | OS: RaspiOS - Distribution: Debian GNU/Linux 11 (bullseye) 11 - Kernel Release: 6.1.21-v8+ - Kernel Version: #1642 SMP PREEMPT Mon Apr  3 17:24:16 BST 2023 - Architecture: aarch64 |❗|
+|-|-|:-|:-|-|
 
 With a freshly installed system with 'bullseye' you might run into the issue that hciuart.service failed to start. In this case `$systemctl status hciuart.service` (with elevated rights) shows this:
 
