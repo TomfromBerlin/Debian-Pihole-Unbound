@@ -361,6 +361,6 @@ Zweite Suche:
 
 ![second-dig-noerror-0ms](https://user-images.githubusercontent.com/123265893/218286806-2a52dcf4-bc63-40f4-8d93-c0e6c5ecce6e.png)
 
-Die vierte Zeile von oben sollte `status: NOERROR` lauten. Wenn ein Fehler auftritt, dann stimmt offensichtlich etwas nicht. Überprüfen Sie alle Schritte, die unternommen wurden. Vielleicht ist da ein Tippfehler oder so. Sollte sich im Tutorial ein Fehler eingeschlichen haben, wäre ich für Hinweise darauf sehr dankbar. Geeignete Wege sind über die [Diskussionsseite](/../../../../TomfromBerlin/Debian-Pihole-Unbound/discussions) oder über eine [Problemmeldung](/../../../. ./TomfromBerlin/Debian-Pihole-Unbound/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc).
+Die vierte Zeile von oben sollte `status: NOERROR` lauten. Wenn ein Fehler auftritt, dann stimmt offensichtlich etwas nicht. Überprüfen Sie alle Schritte, die unternommen wurden. Vielleicht ist da ein Tippfehler oder so. Sollte sich im Tutorial ein Fehler eingeschlichen haben, wäre ich für Hinweise darauf sehr dankbar. Geeignete Wege sind über die [Diskussionsseite](/../../../../TomfromBerlin/Debian-Pihole-Unbound/discussions) oder über eine [Problemmeldung](/../../../../TomfromBerlin/Debian-Pihole-Unbound/issues).
 
 Das war's, Leute. Ich hoffe, das alles hilft etwas.
