@@ -53,6 +53,9 @@ Das Tastenkürzel `Strg-o` versetzt Midnight Commander in den Hintergrund, erneu
 
 ## Bluetooth Service kann nicht gestartet werden
 
+|❗| Update 17.Mai 2023 | Es kann sein, dass eventuell zusätzlich angeschlossene Bluetooth-Adapter (Maus, Keyboard, Audio) mit dem eingebauten Adapter in Konflikt geraten. Bei Problemen könnte helfen, den zusätzlichen Adapter erst nach dem Booten in den USB-Port zu stecken. | OS: RaspiOS - Distribution: Debian GNU/Linux 11 (bullseye) 11 - Kernel Release: 6.1.21-v8+ - Kernel Version: #1642 SMP PREEMPT Mon Apr  3 17:24:16 BST 2023 - Architecture: aarch64 |❗|
+|-|-|:-|:-|-|
+
 |❗| Update 30.April 2023 | Nach der Systemaktualisierung hatte ich die gleichen Probleme mit Bluetooth wie unten beschrieben. Also habe ich versucht, bluetooth.service neu zu laden, nachdem die Boot-Sequenz beendet war, was nicht gelang. Ich beschloss, den hinzugefügten Eintrag in /etc/boot/config.txt `dtparam=krnbt` auszukommentieren. Nun, das System bootete ohne jegliche Beschwerden bezüglich Bluetooth. Ich werde das weiter beobachten und dieses Tutorial bei Bedarf aktualisieren. | OS: RaspiOS - Distribution: Debian GNU/Linux 11 (bullseye) 11 - Kernel Release: 6.1.21-v8+ - Kernel Version: #1642 SMP PREEMPT Mon Apr  3 17:24:16 BST 2023 - Architecture: aarch64 |❗|
 |-|-|:-|:-|-|
 
@@ -183,6 +186,9 @@ Natürlich kann jeder andere verfügbare DNS ausgewählt werden.
 Jetzt sollte Pi-hole betriebsbereit sein und du kannst dir eine weitere Tasse Kaffee oder Tee holen, da wir erst zur Hälfte fertig sind.
 
 ### _Unbound_
+
+|❗| Update 17.Mai 2023 | Neuere Distributionen des RaspiOS bringen für die Netzwerkverwaltung neben dhcpd auch den Network-Manager mit. Mit dem Tool `raspi-config` kann dieser ausgewählt werden. Die unten beschriebenen Änderungen an den Dateien sind dann wahrscheinlich nicht mehr notwendig. Ich habe den Network-Manager ausgewählt, nachdem ich die Änderungen vorgenommen hatte und alles funktioniert weiterhin ohne weitere Anpassungen vornehmen zu müssen. Unterschiede gibt es beim Port, der bei `dhcpd` auf `5335` eingestellt wurde. Wird nach der Umstellung der Befehl `dig nasa.gov 127.0.0.1 -p 5335` eingegeben, kommt es zu einer Fehlermeldung. Der Port `53` muss hier angegeben werden, also `dig nasa.gov 127.0.0.1 -p 53`. Unbound wird weiterhin als DNS verwendet und beantwortet auch entsprechende Anfragen über diesen Port. Aber, wie gesagt, das musste ich nur nur bei dem Befehl extra angeben. Wie es sich bei einem frisch installierten System verhält, kann ich momentan nicht sagen. | OS: RaspiOS - Distribution: Debian GNU/Linux 11 (bullseye) 11 - Kernel Release: 6.1.21-v8+ - Kernel Version: #1642 SMP PREEMPT Mon Apr  3 17:24:16 BST 2023 - Architecture: aarch64 |❗|
+|-|-|:-|:-|-|
 
 Um Unbound zur Zusammenarbeit zu bewegen, sind unter Debian Bullseye einige Schritte mehr nötig, als uns diverse Anleitungen im Internet versprechen. Es reicht nicht aus, es einfach zu installieren, aber es ist offensichtlich notwendig. In unserem Fall verwenden wir einfach die Version, die in den Debian-Standard-Repositories zu finden ist. Dies ist derzeit die Version 1.9.xx. Auf GitHub gibt es eine [neuere Version](/../../../../NLnetLabs/unbound)), aber die Verwendung des Pakets aus dem Standard-Repo vermeidet Kompilierungs- und Aktualisierungsprobleme.
 
