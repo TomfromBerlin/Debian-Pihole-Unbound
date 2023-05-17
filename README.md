@@ -43,6 +43,9 @@ You can start Midnight Commander with `sudo mc` to prevent typing sudo every tim
 
 ### _Known Issues_
 
+|❗| Update May, 17th 2023 | It is possible that additionally connected Bluetooth adapters (mouse, keyboard, audio) may conflict with the built-in adapter. In case of problems, it might help to plug the additional adapter into the USB port only after booting. | OS: RaspiOS - Distribution: Debian GNU/Linux 11 (bullseye) 11 - Kernel Release: 6.1.21-v8+ - Kernel Version: #1642 SMP PREEMPT Mon Apr  3 17:24:16 BST 2023 - Architecture: aarch64 |❗|
+|-|-|:-|:-|-|
+
 |❗| Update April, 30th 2023 | After the system update I had the same problems with bluetooth as described below. So I tried to reload bluetooth.service after the boot sequence finished, which failed. I decided to comment out the added entry in /etc/boot/config.txt `dtparam=krnbt`. Well, the system booted without any complaints regarding Bluetooth. | OS: RaspiOS - Distribution: Debian GNU/Linux 11 (bullseye) 11 - Kernel Release: 6.1.21-v8+ - Kernel Version: #1642 SMP PREEMPT Mon Apr  3 17:24:16 BST 2023 - Architecture: aarch64 |❗|
 |-|-|:-|:-|-|
 
